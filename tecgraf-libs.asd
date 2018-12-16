@@ -5,7 +5,9 @@
   :license "MIT"
   :serial t
   :pathname "tecgraf-libs"
-  :components ((:file "tecgraf-libs"))
+  :components ((:file "package")
+	       (:file "utils")
+	       (:file "tecgraf-libs"))
   :depends-on (#:cl+ssl
 	       #:drakma
 	       #:cffi

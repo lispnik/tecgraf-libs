@@ -10,4 +10,7 @@
 	       #:drakma
 	       #:cffi
 	       #:puri
-	       #:cl-fad))
+	       #:cl-fad
+	       #:deflate
+	       #:trivial-features
+	       #:ironclad))

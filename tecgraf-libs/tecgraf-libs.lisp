@@ -9,7 +9,12 @@
 
 (defvar *archives*
   #+(and linux x86-64)
-  '()
+  '(("https://sourceforge.net/projects/iup/files/3.26/Linux%20Libraries/iup-3.26_Linux415_64_lib.tar.gz"
+     "5891a500486d9d3b97ae8b85365f584b106fee56790fe1ee3225429dd8f53270")
+    ("https://sourceforge.net/projects/canvasdraw/files/5.12/Linux%20Libraries/cd-5.12_Linux415_64_lib.tar.gz"
+     "f7c570e86b5d5fbf7e68e1800953c4f6a6574594943a24304b0134302c3ad553")
+    ("https://sourceforge.net/projects/imtoolkit/files/3.13/Linux%20Libraries/im-3.13_Linux415_64_lib.tar.gz"
+     "40fa8b1e063a039da94453c9fe31b17a6c56c10de47e966c4b528e8fc7f8403f"))
   #+(and windows x86-64)
   '(("https://sourceforge.net/projects/iup/files/3.26/Windows%20Libraries/Dynamic/iup-3.26_Win64_dll15_lib.zip"
      "179fc01047c6ee5f86fd010e71613c991fe82c4ad5d929b4017d1ee6fe6662b7")

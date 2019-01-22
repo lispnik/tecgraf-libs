@@ -12,7 +12,9 @@
 	       #:drakma
 	       #:cffi
 	       #:puri
-	       #:cl-fad
-	       #:deflate
+	       #:zip
 	       #:trivial-features
-	       #:ironclad))
+	       #:ironclad)
+  :perform (load-op (o c)
+		    (uiop:symbol-call "TECGRAF-LIBS" "DOWNLOAD")
+		    (pushnew :tecgraf-libs *features*)))

@@ -14,8 +14,9 @@
 	;; (drakma:http-request url :verify :required :want-stream t)
       (drakma:http-request url :want-stream t)
       (if (= status-code 200)
-	  (loop with buffer = (make-array +buffer-size+ :element-type '(unsigned-byte 8))
+	  (loop with buffer
+		  = (make-array +buffer-size+ :element-type '(unsigned-byte 8))
 		for read-count = (read-sequence buffer input-stream)
 		do (write-sequence buffer output-stream :end read-count)
 		while (= read-count +buffer-size+))
-	  (error "Error downloading archive ~A" url)))))
+	  (cerror "Error downloading archive ~A, status code ~A" url status-code)))))

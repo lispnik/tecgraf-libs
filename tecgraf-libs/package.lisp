@@ -1,4 +1,5 @@
 (defpackage #:tecgraf-libs
-  (:use #:common-lisp))
+  (:use #:common-lisp)
+  (:export #:download))
 
 (in-package #:tecgraf-libs)

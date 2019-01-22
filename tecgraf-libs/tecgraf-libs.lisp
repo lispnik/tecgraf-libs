@@ -1,48 +1,67 @@
-(defpackage #:tecgraf-libs
-  (:use #:common-lisp))
-
 (in-package #:tecgraf-libs)
 
-;;; (ironclad:byte-array-to-hex-string (ironclad:digest-file 'ironclad:sha256 #p"/etc/hosts"))
+(defvar *libs-pathname*
+  (asdf:system-relative-pathname
+   (asdf:find-system "tecgraf-libs")
+   (make-pathname :directory '(:relative "libs"))))
+
+(defvar *shared-library-type* #+windows ".dll" #+linux ".so")
 
 (defvar *archives*
   #+(and linux x86-64)
-  '(("https://sourceforge.net/projects/iup/files/3.25/Linux%20Libraries/iup-3.25_Linux44_64_lib.tar.gz"
-     "318cbed5c418a93f69aac5946fe6fb24af2e53086ef93993752b228d978da07f")
-    ("https://sourceforge.net/projects/canvasdraw/files/5.11.1/Linux%20Libraries/cd-5.11.1_Linux44_64_lib.tar.gz"
-     "a6eceb2e407bc9f00130f4e3382f9e3551a226506a66d0db3ec143504c17d60c")
-    ("https://sourceforge.net/projects/imtoolkit/files/3.12/Linux%20Libraries/im-3.12_Linux44_64_lib.tar.gz"
-     "cbe54b01694ec343d87d1a986a53ab62664bd7dd71f953f2bdcc6c2b400edabb"))
+  '()
   #+(and windows x86-64)
-  '(("https://sourceforge.net/projects/iup/files/3.25/Windows%20Libraries/Dynamic/iup-3.25_Win64_dllw6_lib.zip"
-     "4e281b40a327544307707ffb29156584112e37019ffad08179f1851343ce8ff2")
-    ("https://sourceforge.net/projects/canvasdraw/files/5.11.1/Windows%20Libraries/Dynamic/cd-5.11.1_Win64_dllw6_lib.zip"
-     "7931850b14c7abfc700929c079a2255a303dd00271928dda658e4621dd9d7c33")
-    ("https://sourceforge.net/projects/imtoolkit/files/3.12/Windows%20Libraries/Dynamic/im-3.12_Win64_dllw6_lib.zip"
-     "4b05e7f135d870f6997a920cd8fdb1cecae24d47495f4da4203c2dc01ce19d3a")))
-
+  '(("https://sourceforge.net/projects/iup/files/3.26/Windows%20Libraries/Dynamic/iup-3.26_Win64_dll15_lib.zip"
+     "179fc01047c6ee5f86fd010e71613c991fe82c4ad5d929b4017d1ee6fe6662b7")
+    ("https://sourceforge.net/projects/canvasdraw/files/5.12/Windows%20Libraries/Dynamic/cd-5.12_Win64_dll15_lib.zip"
+     "8b5c791c0d01468a20369b56002c1dda8fb34b2e5d9a5332c479cb34b24b4674")
+    ("https://sourceforge.net/projects/imtoolkit/files/3.13/Windows%20Libraries/Dynamic/im-3.13_Win64_dll15_lib.zip"
+     "82e6b12e96d2d278e0f94bef0ec335500af97aac044254b8d6a5bcc73847fe43")))
 
 (defun download-tecgraf-libs ()
   (loop for (archive-url hash) in *archives*
 	for archive-pathname = (pathname-from-url archive-url)
-	for output-pathname = (asdf:system-relative-pathname :tecgraf-libs archive-pathname)
+	for output-pathname
+	  = (asdf:system-relative-pathname :tecgraf-libs archive-pathname)
+	do (format t "~&Downloading ~A..." archive-url)
 	do (download-to-pathname archive-url output-pathname)
 	collect (list output-pathname hash)))
 
 (defun verify (downloads)
   (loop for (pathname expected-hash) in downloads
-	for download-hash = (ironclad:byte-array-to-hex-string (ironclad:digest-file 'ironclad:sha256 pathname))
+	for download-hash
+	  = (ironclad:byte-array-to-hex-string
+	     (ironclad:digest-file 'ironclad:sha256 pathname))
 	for match = (string= download-hash expected-hash)
 	do (unless match
-	     (error "Checksum for ~A does not match (got ~A, expected ~A)" pathname download-hash expected-hash))
+	     (cerror "Skip verification of file checksum"
+		     "Checksum for ~A does not match (got ~A, expected ~A)"
+		     pathname download-hash expected-hash))
 	collect pathname))
+
+#+windows
+(defun unpack (archive-pathnames)
+  (let ((unpacked '()))
+    (dolist (archive archive-pathnames unpacked)
+      (zip:with-zipfile (file archive)
+	(zip:do-zipfile-entries (name entry file)
+	  (when (alexandria:ends-with-subseq *shared-library-type* name)
+	    (let* ((entry-pathname (parse-namestring name))
+		   (out-pathname (merge-pathnames 
+				  (make-pathname :name (pathname-name entry-pathname)
+						 :type (pathname-type entry-pathname ))
+				  *libs-pathname*)))
+	      (push out-pathname unpacked)
+	      (alexandria:write-byte-vector-into-file
+	       (zip:zipfile-entry-contents entry)
+	       out-pathname
+	       :if-exists :supersede))))))))
+
+#+linux
+(defun unpack (archive-pathnames) (error "Not implemented"))
 
 (defun download ()
   (let* ((downloaded (download-tecgraf-libs))
-	 (verified (verify downloaded)))
-    verified))
-
-;;; unpack them
-;;; patchelf for ORIGIN
-;;; copy to asdf target location
-
+	 (verified (verify downloaded))
+	 (unpacked (unpack verified)))
+    (format t "~%Unpacked to ~S" *libs-pathname*)))

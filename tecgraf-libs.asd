@@ -12,7 +12,8 @@
 	       #:drakma
 	       #:cffi
 	       #:puri
-	       #:zip
+	       #+window #:zip
+	       #+linux #:uiop
 	       #:trivial-features
 	       #:ironclad)
   :perform (load-op (o c)

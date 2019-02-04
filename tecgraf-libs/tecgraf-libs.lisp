@@ -28,7 +28,7 @@
 	for archive-pathname = (pathname-from-url archive-url)
 	for output-pathname
 	  = (asdf:system-relative-pathname :tecgraf-libs archive-pathname)
-	do (format t "~&Downloading ~A..." archive-url)
+	do (format t "~&Downloading ~A...~%" archive-url)
 	do (download-to-pathname archive-url output-pathname)
 	collect (list output-pathname hash)))
 
@@ -63,7 +63,13 @@
 	       :if-exists :supersede))))))))
 
 #+linux
-(defun unpack (archive-pathnames) (error "Not implemented"))
+(defun unpack (archive-pathnames)
+  (dolist (archive archive-pathnames)
+    (uiop:run-program
+     (format nil "tar xvfz '~A' -C '~A' --transform='~A' --wildcards '*.so'"
+	     (truename archive)
+	     (truename *libs-pathname*)
+	     "s/.*\\///"))))
 
 (defun download ()
   (let* ((downloaded (download-tecgraf-libs))

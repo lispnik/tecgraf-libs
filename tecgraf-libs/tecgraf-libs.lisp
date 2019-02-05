@@ -64,15 +64,19 @@
 
 #+linux
 (defun unpack (archive-pathnames)
-  (dolist (archive archive-pathnames)
-    (uiop:run-program
-     (format nil "tar xvfz '~A' -C '~A' --transform='~A' --wildcards '*.so'"
-	     (truename archive)
-	     (truename *libs-pathname*)
-	     "s/.*\\///"))))
+  (let ((unpacked '()))
+    (dolist (archive archive-pathnames unpacked)
+      (uiop:run-program
+       (format nil "tar xvfz '~A' -C '~A' --transform='~A' --wildcards '*.so'"
+	       (truename archive)
+	       (truename *libs-pathname*)
+	       "s/.*\\///"))
+      (dolist (file (uiop:directory-files *libs-pathname* #p"*.so"))
+	(push file unpacked)))))
 
 (defun download ()
   (let* ((downloaded (download-tecgraf-libs))
 	 (verified (verify downloaded))
 	 (unpacked (unpack verified)))
+    (print unpacked)
     (format t "~%Unpacked to ~S" *libs-pathname*)))

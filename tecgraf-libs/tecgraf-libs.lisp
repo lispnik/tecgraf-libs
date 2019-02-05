@@ -29,6 +29,7 @@
 	for output-pathname
 	  = (asdf:system-relative-pathname :tecgraf-libs archive-pathname)
 	do (format t "~&Downloading ~A...~%" archive-url)
+	do (finish-output)
 	do (download-to-pathname archive-url output-pathname)
 	collect (list output-pathname hash)))
 
@@ -67,16 +68,23 @@
   (let ((unpacked '()))
     (dolist (archive archive-pathnames unpacked)
       (uiop:run-program
-       (format nil "tar xvfz '~A' -C '~A' --transform='~A' --wildcards '*.so'"
+       (format nil "tar xfz '~A' -C '~A' --transform='~A' --wildcards '*.so'"
 	       (truename archive)
 	       (truename *libs-pathname*)
 	       "s/.*\\///"))
       (dolist (file (uiop:directory-files *libs-pathname* #p"*.so"))
 	(push file unpacked)))))
 
+#+linux
+(defun patch (elves)
+  (dolist (elf elves elves)
+    (uiop:run-program
+     (format nil "patchelf --set-rpath '$ORIGIN' '~A'" (truename elf)))))
+
 (defun download ()
   (let* ((downloaded (download-tecgraf-libs))
 	 (verified (verify downloaded))
 	 (unpacked (unpack verified)))
-    (print unpacked)
-    (format t "~%Unpacked to ~S" *libs-pathname*)))
+    #+linux
+    (patch unpacked)
+    (format t "~&Unpacked to ~S~%" *libs-pathname*)))

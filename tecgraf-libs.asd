@@ -8,7 +8,8 @@
   :components ((:file "package")
 	       (:file "utils")
 	       (:file "tecgraf-libs"))
-  :depends-on (#:cl+ssl
+  :depends-on (#:cl-fad
+	       #:cl+ssl
 	       #:drakma
 	       #:cffi
 	       #:puri

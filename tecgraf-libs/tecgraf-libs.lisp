@@ -25,43 +25,43 @@
 
 (defun download-tecgraf-libs ()
   (loop for (archive-url hash) in *archives*
-	for archive-pathname = (pathname-from-url archive-url)
-	for output-pathname
-	  = (asdf:system-relative-pathname :tecgraf-libs archive-pathname)
-	do (format t "~&Downloading ~A...~%" archive-url)
-	do (finish-output)
-	do (download-to-pathname archive-url output-pathname)
-	collect (list output-pathname hash)))
+        for archive-pathname = (pathname-from-url archive-url)
+        for output-pathname
+          = (asdf:system-relative-pathname :tecgraf-libs archive-pathname)
+        do (format t "~&Downloading ~A...~%" archive-url)
+        do (finish-output)
+        do (download-to-pathname archive-url output-pathname)
+        collect (list output-pathname hash)))
 
 (defun verify (downloads)
   (loop for (pathname expected-hash) in downloads
-	for download-hash
-	  = (ironclad:byte-array-to-hex-string
-	     (ironclad:digest-file 'ironclad:sha256 pathname))
-	for match = (string= download-hash expected-hash)
-	do (unless match
-	     (cerror "Skip verification of file checksum"
-		     "Checksum for ~A does not match (got ~A, expected ~A)"
-		     pathname download-hash expected-hash))
-	collect pathname))
+        for download-hash
+          = (ironclad:byte-array-to-hex-string
+             (ironclad:digest-file 'ironclad:sha256 pathname))
+        for match = (string= download-hash expected-hash)
+        do (unless match
+             (cerror "Skip verification of file checksum"
+                     "Checksum for ~A does not match (got ~A, expected ~A)"
+                     pathname download-hash expected-hash))
+        collect pathname))
 
 #+windows
 (defun unpack (archive-pathnames)
   (let ((unpacked '()))
     (dolist (archive archive-pathnames unpacked)
       (zip:with-zipfile (file archive)
-	(zip:do-zipfile-entries (name entry file)
-	  (when (alexandria:ends-with-subseq *shared-library-type* name)
-	    (let* ((entry-pathname (parse-namestring name))
-		   (out-pathname (merge-pathnames 
-				  (make-pathname :name (pathname-name entry-pathname)
-						 :type (pathname-type entry-pathname ))
-				  *libs-pathname*)))
-	      (push out-pathname unpacked)
-	      (alexandria:write-byte-vector-into-file
-	       (zip:zipfile-entry-contents entry)
-	       out-pathname
-	       :if-exists :supersede))))))))
+        (zip:do-zipfile-entries (name entry file)
+          (when (alexandria:ends-with-subseq *shared-library-type* name)
+            (let* ((entry-pathname (parse-namestring name))
+                   (out-pathname (merge-pathnames 
+                                  (make-pathname :name (pathname-name entry-pathname)
+                                                 :type (pathname-type entry-pathname ))
+                                  *libs-pathname*)))
+              (push out-pathname unpacked)
+              (alexandria:write-byte-vector-into-file
+               (zip:zipfile-entry-contents entry)
+               out-pathname
+               :if-exists :supersede))))))))
 
 #+linux
 (defun unpack (archive-pathnames)
@@ -69,11 +69,11 @@
     (dolist (archive archive-pathnames unpacked)
       (uiop:run-program
        (format nil "tar xfz '~A' -C '~A' --transform='~A' --wildcards '*.so'"
-	       (truename archive)
-	       (truename *libs-pathname*)
-	       "s/.*\\///"))
+               (truename archive)
+               (truename *libs-pathname*)
+               "s/.*\\///"))
       (dolist (file (uiop:directory-files *libs-pathname* #p"*.so"))
-	(push file unpacked)))))
+        (push file unpacked)))))
 
 #+linux
 (defun patch (elves)
@@ -83,8 +83,8 @@
 
 (defun download ()
   (let* ((downloaded (download-tecgraf-libs))
-	 (verified (verify downloaded))
-	 (unpacked (unpack verified)))
+         (verified (verify downloaded))
+         (unpacked (unpack verified)))
     #+linux
     (patch unpacked)
     (format t "~&Unpacked to ~S~%" *libs-pathname*)))

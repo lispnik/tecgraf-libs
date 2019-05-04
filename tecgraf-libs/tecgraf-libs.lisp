@@ -9,8 +9,8 @@
 
 (defvar *archives*
   #+(and linux x86-64)
-  '(("https://sourceforge.net/projects/iup/files/3.26/Linux%20Libraries/iup-3.26_Linux415_64_lib.tar.gz"
-     "5891a500486d9d3b97ae8b85365f584b106fee56790fe1ee3225429dd8f53270")
+  '(("https://sourceforge.net/projects/iup/files/3.27/Linux%20Libraries/iup-3.27_Linux415_64_lib.tar.gz"
+     "7c9c91cb2e4a167c7066b50b46f37ac5db0f117481a54fb5607fde045404cd45")
     ("https://sourceforge.net/projects/canvasdraw/files/5.12/Linux%20Libraries/cd-5.12_Linux415_64_lib.tar.gz"
      "f7c570e86b5d5fbf7e68e1800953c4f6a6574594943a24304b0134302c3ad553")
     ("https://sourceforge.net/projects/imtoolkit/files/3.13/Linux%20Libraries/im-3.13_Linux415_64_lib.tar.gz"
@@ -41,7 +41,7 @@
         for match = (string= download-hash expected-hash)
         do (unless match
              (cerror "Skip verification of file checksum"
-                     "Checksum for ~A does not match (got ~A, expected ~A)"
+                     "Checksum for ~A does not match (got ~A expected ~A)"
                      pathname download-hash expected-hash))
         collect pathname))
 
@@ -55,7 +55,7 @@
             (let* ((entry-pathname (parse-namestring name))
                    (out-pathname (merge-pathnames 
                                   (make-pathname :name (pathname-name entry-pathname)
-                                                 :type (pathname-type entry-pathname ))
+                                                 :type (pathname-type entry-pathname))
                                   *libs-pathname*)))
               (push out-pathname unpacked)
               (alexandria:write-byte-vector-into-file
@@ -87,4 +87,18 @@
          (unpacked (unpack verified)))
     #+linux
     (patch unpacked)
-    (format t "~&Unpacked to ~S~%" *libs-pathname*)))
+    (format t "~&Unpacked to ~S~%" *libs-pathname*)
+    (let ((path (asdf:system-relative-pathname "tecgraf-libs" "libs/")))
+      (format t "
+Lisp init file:
+  (ql:quickload \"cffi\")
+  (pushnew (asdf:system-relative-pathname \"tecgraf-libs\" \"lib\")
+           cffi:*foreign-library-directories*)
+
+Linux:
+  export LD_LIBRARY_PATH=\"~A:$LD_LIBRARY_PATH\"
+  LD_LIBRARY_PATH=\"~A:$LD_LIBRARY_PATH\" lisp ...
+
+Windows:
+  setx PATH \"~A;%PATH%\"
+" path path path))))

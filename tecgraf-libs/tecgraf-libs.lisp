@@ -92,7 +92,7 @@
       (format t "
 Lisp init file:
   (ql:quickload \"cffi\")
-  (pushnew (asdf:system-relative-pathname \"tecgraf-libs\" \"lib\")
+  (pushnew (asdf:system-relative-pathname \"tecgraf-libs\" \"libs/\")
            cffi:*foreign-library-directories*)
 
 Linux:

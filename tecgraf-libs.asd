@@ -14,7 +14,7 @@
                #:drakma
                #:cffi
                #:puri
-               #+windows #:zip
+               #+(or (and sbcl os-windows) (and ccl windows)) #:zip
                #+linux #:uiop
                #:ironclad)
   :perform (load-op :after (o c)

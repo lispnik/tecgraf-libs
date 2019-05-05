@@ -8,15 +8,15 @@
   :components ((:file "package")
                (:file "utils")
                (:file "tecgraf-libs"))
-  :depends-on (#:cl-fad
+  :depends-on (#:trivial-features
+               #:cl-fad
                #:cl+ssl
                #:drakma
                #:cffi
                #:puri
                #+windows #:zip
                #+linux #:uiop
-               #:trivial-features
                #:ironclad)
-  :perform (load-op (o c)
+  :perform (load-op :after (o c)
                     (uiop:symbol-call "TECGRAF-LIBS" "DOWNLOAD")
                     (pushnew :tecgraf-libs *features*)))

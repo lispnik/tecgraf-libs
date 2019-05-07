@@ -1,4 +1,5 @@
-* Common Lisp download helper for Tecgraf libraries (IUP, CD and IM)
+#+STARTUP: showall
+#+TITLE: Common Lisp download helper for Tecgraf libraries (IUP, CD and IM)
 
 This system:
 
@@ -22,7 +23,8 @@ This system:
    specific system.
 
 *NOTE:* On Linux you will need to install system dependencies that the
-IUP libraries are linked against. e.g. ~sudo apt install libgtk-3.0~.
+IUP libraries are linked against. e.g. ~sudo apt install
+libgtk-3.0~. On Windows, everything is self contained.
 
 * Example
 

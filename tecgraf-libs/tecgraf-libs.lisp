@@ -87,6 +87,8 @@
          (unpacked (unpack verified)))
     #+linux
     (patch unpacked)
+    #+windows
+    (declare (ignore unpacked))
     (format t "~&Unpacked to ~S~%" *libs-pathname*)
     (let ((path (asdf:system-relative-pathname "tecgraf-libs" "libs/")))
       (format t "

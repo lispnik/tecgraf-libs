@@ -10,10 +10,8 @@
                (:file "tecgraf-libs"))
   :depends-on (#:trivial-features
                #:cl-fad
-               #:cl+ssl
-               #:drakma
-               #:cffi
-               #:puri
+               #:dexador
+               #:quri
                #+(or (and sbcl os-windows) (and ccl windows)) #:zip
                #+linux #:uiop
                #:ironclad)

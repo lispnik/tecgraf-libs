@@ -4,15 +4,14 @@
 
 (defun pathname-from-url (url)
   "Given http://example.com/foo.zip, return #p\"foo.zip\"."
-  (path:basename (puri:uri-path (puri:parse-uri url))))
+  (path:basename (quri:uri-path (quri:uri url))))
 
 (defun download-to-pathname (url output-pathname)
   (with-open-file
       (output-stream output-pathname :direction :output :if-exists :supersede :element-type '(unsigned-byte 8))
     (multiple-value-bind
           (input-stream status-code)
-        ;; (drakma:http-request url :verify :required :want-stream t)
-      (drakma:http-request url :want-stream t)
+        (dex:get url :want-stream t :max-redirects 10)
       (if (= status-code 200)
           (loop with buffer
                   = (make-array +buffer-size+ :element-type '(unsigned-byte 8))

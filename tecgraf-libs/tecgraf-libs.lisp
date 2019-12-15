@@ -9,15 +9,15 @@
 
 (defvar *archives*
   #+(and linux x86-64)
-  '(("https://sourceforge.net/projects/iup/files/3.27/Linux%20Libraries/iup-3.27_Linux415_64_lib.tar.gz"
-     "7c9c91cb2e4a167c7066b50b46f37ac5db0f117481a54fb5607fde045404cd45")
+  '(("https://sourceforge.net/projects/iup/files/3.28/Linux%20Libraries/iup-3.28_Linux50_64_lib.tar.gz"
+     "c24785cf227acbf743ee085814d6dfdcc6fe9a11f923d234bb0a57a1e67e2059")
     ("https://sourceforge.net/projects/canvasdraw/files/5.12/Linux%20Libraries/cd-5.12_Linux415_64_lib.tar.gz"
      "f7c570e86b5d5fbf7e68e1800953c4f6a6574594943a24304b0134302c3ad553")
     ("https://sourceforge.net/projects/imtoolkit/files/3.13/Linux%20Libraries/im-3.13_Linux415_64_lib.tar.gz"
      "40fa8b1e063a039da94453c9fe31b17a6c56c10de47e966c4b528e8fc7f8403f"))
   #+(and windows x86-64)
-  '(("https://sourceforge.net/projects/iup/files/3.27/Windows%20Libraries/Dynamic/iup-3.27_Win64_dll15_lib.zip"
-     "075bc62a04046de044dbc06a567e6b45d45ed113743fcf6f02388afe04602de4")
+  '(("https://sourceforge.net/projects/iup/files/3.28/Windows%20Libraries/Dynamic/iup-3.28_Win64_dll15_lib.zip"
+     "82b04b6c593c85a1ecc5775f763c264d57b5e734c7e50215c0f00bf815a06334")
     ("https://sourceforge.net/projects/canvasdraw/files/5.12/Windows%20Libraries/Dynamic/cd-5.12_Win64_dll15_lib.zip"
      "8b5c791c0d01468a20369b56002c1dda8fb34b2e5d9a5332c479cb34b24b4674")
     ("https://sourceforge.net/projects/imtoolkit/files/3.13/Windows%20Libraries/Dynamic/im-3.13_Win64_dll15_lib.zip"

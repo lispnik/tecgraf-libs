@@ -2,5 +2,3 @@
 *.fasl
 *.tar.gz
 *.zip
-libs/*.dll
-libs/*.so

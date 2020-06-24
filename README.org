@@ -1,61 +1,16 @@
 #+STARTUP: showall
-#+TITLE: Common Lisp download helper for Tecgraf libraries (IUP, CD and IM)
+#+TITLE: Tecgraf libraries (IUP, CD and IM) as Common Lisp ASDF System
 
-This system:
+This system includes a shell script, ~update.sh~ which downloads the
+Tecgraf shared libraries for Windows and Linux and places them in
+subdirectory ~libs/~. See also
+https://www.tecgraf.puc-rio.br/iup/en/download_tips.html
 
- - Pulls the latest IUP, CD and IM libraries from locations described
-   at https://www.tecgraf.puc-rio.br/iup/en/download_tips.html
+ - The shared libraries are then included in this repository.
 
- - Verifies the SHA256 checksum of each archive against previously
-   recorded checksums.
+ - The location of the shared libraries can be referenced from
+   ~(asdf:system-relative-pathname "tecgraf-libs" "libs/")~.
 
- - Unpacks the distribution archives.
-
- - Installs the shared libraries into ~(asdf:system-relative-pathname
-   "tecgraf-libs" "libs/")~.
-
- - On Linux, uses ~patchelf~ to set the shared library rpath to
+ - On Linux, ~patchelf~ is used set the shared library rpath to
    ~$ORIGIN~ so that the interdependencies between the Tecgraf shared
-   libraries can be found relative to each other. Install ~patchelf~
-   with, for example, ~sudo apt install patchelf~.
- 
- - Display copy and pastable instructions on how to set paths for a
-   specific system.
-
-*NOTE:* On Linux you will need to install system dependencies that the
-IUP libraries are linked against. e.g. ~sudo apt install
-libgtk-3.0~. On Windows, everything is self contained.
-
-* Example
-
-#+begin_src lisp :results output
-  (ql:quickload "tecgraf-libs")
-#+end_src
-
-#+RESULTS:
-#+begin_example
-To load "tecgraf-libs":
-  Load 1 ASDF system:
-    tecgraf-libs
-; Loading "tecgraf-libs"
-......
-Downloading https://sourceforge.net/projects/iup/files/3.27/Linux%20Libraries/iup-3.27_Linux415_64_lib.tar.gz...
-...
-Downloading https://sourceforge.net/projects/canvasdraw/files/5.12/Linux%20Libraries/cd-5.12_Linux415_64_lib.tar.gz...
-Downloading https://sourceforge.net/projects/imtoolkit/files/3.13/Linux%20Libraries/im-3.13_Linux415_64_lib.tar.gz...
-.
-Unpacked to #P"/home/mkennedy/.quicklisp/local-projects/lispnik/tecgraf-libs/libs/"
-
-Lisp init file:
-  (ql:quickload "cffi")
-  (pushnew (asdf:system-relative-pathname "tecgraf-libs" "libs/")
-           cffi:*foreign-library-directories*)
-
-Linux:
-  export LD_LIBRARY_PATH="/home/mkennedy/.quicklisp/local-projects/lispnik/tecgraf-libs/libs/:$LD_LIBRARY_PATH"
-  LD_LIBRARY_PATH="/home/mkennedy/.quicklisp/local-projects/lispnik/tecgraf-libs/libs/:$LD_LIBRARY_PATH" lisp ...
-
-Windows:
-  setx PATH "/home/mkennedy/.quicklisp/local-projects/lispnik/tecgraf-libs/libs/;%PATH%"
-
-#+end_example
+   libraries can be found relative to each other.
